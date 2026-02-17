@@ -2,11 +2,21 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
+const os = require('os');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const textToSpeech = require('@google-cloud/text-to-speech');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Handle Google Cloud credentials from environment variable
+if (process.env.GOOGLE_CREDENTIALS_B64) {
+  const credentialsJson = Buffer.from(process.env.GOOGLE_CREDENTIALS_B64, 'base64').toString('utf-8');
+  const credentialsPath = path.join(os.tmpdir(), 'google-credentials.json');
+  fs.writeFileSync(credentialsPath, credentialsJson);
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
+}
 
 // Initialize Google Generative AI client
 const client = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
