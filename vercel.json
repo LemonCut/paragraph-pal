@@ -2,7 +2,6 @@
   "buildCommand": "npm install",
   "outputDirectory": ".",
   "framework": "nodejs",
-  "nodeVersion": "20.x",
   "env": [
     "GOOGLE_API_KEY",
     "GOOGLE_APPLICATION_CREDENTIALS"
