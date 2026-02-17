@@ -8,6 +8,9 @@ yarn-error.log
 .env.local
 .env.*.local
 
+# Credentials
+credentials.json
+
 # IDE
 .vscode/
 .idea/

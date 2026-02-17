@@ -2,8 +2,9 @@
   "buildCommand": "npm install",
   "outputDirectory": ".",
   "framework": "nodejs",
-  "nodeVersion": "18.x",
+  "nodeVersion": "20.x",
   "env": [
-    "ANTHROPIC_API_KEY"
+    "GOOGLE_API_KEY",
+    "GOOGLE_APPLICATION_CREDENTIALS"
   ]
 }
