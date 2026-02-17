@@ -1,9 +1,0 @@
-{
-  "buildCommand": "npm install",
-  "outputDirectory": ".",
-  "framework": "nodejs",
-  "env": [
-    "GOOGLE_API_KEY",
-    "GOOGLE_APPLICATION_CREDENTIALS"
-  ]
-}
