@@ -1,0 +1,9 @@
+{
+  "buildCommand": "npm install",
+  "outputDirectory": ".",
+  "framework": "nodejs",
+  "nodeVersion": "18.x",
+  "env": [
+    "ANTHROPIC_API_KEY"
+  ]
+}

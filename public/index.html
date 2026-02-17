@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paragraph Pal 🌟</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<button class="teacher-access-btn" onclick="openTeacherModal()">🍎 Teacher View</button>
+
+<!-- Teacher Modal -->
+<div class="modal-overlay" id="teacherModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeTeacherModal()">✕</button>
+    <div class="passcode-screen" id="passcodeScreen">
+      <h2>🍎 Teacher Login</h2>
+      <p>Enter your passcode to view the student's work.</p>
+      <input class="passcode-input" id="passcodeInput" type="password" placeholder="••••" maxlength="6"
+        onkeydown="if(event.key==='Enter')checkPasscode()">
+      <div class="passcode-error" id="passcodeError">❌ Wrong passcode — try again!</div>
+      <button class="btn-primary" onclick="checkPasscode()">Enter</button>
+    </div>
+    <div class="teacher-dash" id="teacherDash">
+      <div class="dash-header"><h2>🍎 Teacher View</h2></div>
+      <div id="dashContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- App -->
+<div class="app-wrapper">
+  <div class="app-header">
+    <span class="mascot">🦉</span>
+    <div class="app-title">Paragraph Pal</div>
+    <div class="app-subtitle">Your writing helper for 4th grade!</div>
+  </div>
+  <div class="progress-area">
+    <span class="progress-label">Your Progress</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:3%"></div></div>
+    <span class="progress-stars" id="progressStars">⭐</span>
+  </div>
+  <div class="chat-area" id="chatArea"></div>
+  <div class="input-area" id="inputArea">
+    <textarea id="userInput" placeholder="Type your answer here... or use the 🎤 mic!" rows="1"
+      onkeydown="handleKeyDown(event)"></textarea>
+    <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Speak your answer">🎤</button>
+    <button class="send-btn" onclick="sendMessage()">➤</button>
+  </div>
+  <div class="mic-hint" id="micHint">🎤 Press the orange button to speak — 🔊 press "Read to me" to hear any message!</div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>
