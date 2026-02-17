@@ -94,6 +94,7 @@ Write exactly 3 different topic sentences that:
 - Specifically name or reference "${topic}" — never write a generic sentence
 - Introduce what all 3 details are about
 - Use simple 4th grade words, 8-16 words each
+- Use simple sentence structure and punctuation
 - Each starts differently
 - Sound friendly and age-appropriate
 - Try to match the writing voice of the student
@@ -115,6 +116,7 @@ Write exactly 3 different concluding sentences that:
 - Specifically reference "${topic}" — never write a generic sentence
 - Restate the main idea in a new way without adding new information
 - Use simple 4th grade words, 8-16 words each
+- Use simple sentence structure and punctuation
 - Each starts differently
 - Try to match the writing voice of the student
 - Sound warm and final, like a closing hug for the paragraph

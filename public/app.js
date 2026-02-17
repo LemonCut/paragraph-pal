@@ -60,11 +60,11 @@ async function speakText(rawText, btn){
     b.textContent='🔊 Read to me';
   });
   
-  if(!btn) return;
-  
   try {
-    btn.classList.add('speaking');
-    btn.textContent='🔊 Stop';
+    if(btn){
+      btn.classList.add('speaking');
+      btn.textContent='🔊 Stop';
+    }
     
     const response = await fetch('/api/synthesize-speech', {
       method: 'POST',
@@ -81,16 +81,20 @@ async function speakText(rawText, btn){
     currentAudio = new Audio(audioUrl);
     
     currentAudio.onended = currentAudio.onerror = ()=>{
-      btn.classList.remove('speaking');
-      btn.textContent='🔊 Read to me';
+      if(btn){
+        btn.classList.remove('speaking');
+        btn.textContent='🔊 Read to me';
+      }
       URL.revokeObjectURL(audioUrl);
     };
     
     currentAudio.play();
   } catch(error) {
     console.error('TTS error:', error);
-    btn.classList.remove('speaking');
-    btn.textContent='🔊 Read to me';
+    if(btn){
+      btn.classList.remove('speaking');
+      btn.textContent='🔊 Read to me';
+    }
   }
 }
 
@@ -98,6 +102,17 @@ async function speakText(rawText, btn){
 // RENDER HELPERS
 // ══════════════════════════════════════
 function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function scrollChatToBottom(){
+  const area = document.getElementById('chatArea');
+  if(!area) return;
+  const scrollRoot = document.scrollingElement || document.documentElement;
+  requestAnimationFrame(()=>{
+    const last = area.lastElementChild;
+    if(last) last.scrollIntoView({behavior:'smooth',block:'end'});
+    scrollRoot.scrollTo({top: scrollRoot.scrollHeight, behavior:'smooth'});
+  });
+}
 
 function addPal(html){
   const area=document.getElementById('chatArea');
@@ -109,7 +124,7 @@ function addPal(html){
       <button class="read-aloud-btn" onclick="speakText(this.closest('.bubble-wrap').querySelector('.bubble').innerHTML,this)">🔊 Read to me</button>
     </div>`;
   area.appendChild(m);
-  m.scrollIntoView({behavior:'smooth',block:'end'});
+  scrollChatToBottom();
 }
 
 function addStudent(text){
@@ -123,7 +138,7 @@ function addStudent(text){
       <button class="read-aloud-btn" onclick="speakText('${safe.replace(/'/g,"\\'")}',this)">🔊 Read to me</button>
     </div>`;
   area.appendChild(m);
-  m.scrollIntoView({behavior:'smooth',block:'end'});
+  scrollChatToBottom();
 }
 
 function addLoader(){
@@ -131,7 +146,7 @@ function addLoader(){
   const m=document.createElement('div');
   m.className='message pal'; m.id='loaderMsg';
   m.innerHTML=`<div class="avatar">🦉</div><div class="bubble-wrap"><div class="bubble"><div class="loading"><span></span><span></span><span></span></div></div></div>`;
-  area.appendChild(m); m.scrollIntoView({behavior:'smooth',block:'end'});
+  area.appendChild(m); scrollChatToBottom();
 }
 
 function removeLoader(){const el=document.getElementById('loaderMsg');if(el)el.remove();}
@@ -139,6 +154,13 @@ function removeLoader(){const el=document.getElementById('loaderMsg');if(el)el.r
 function updateProgress(){
   document.getElementById('progressFill').style.width=(PROGRESS[S.step]||3)+'%';
   document.getElementById('progressStars').textContent=STARS[S.step]||'⭐';
+}
+
+function ensureSentencePunctuation(text){
+  const trimmed = text.trim();
+  if(!trimmed) return text;
+  if(/[.!?]$/.test(trimmed)) return trimmed;
+  return trimmed + '.';
 }
 
 // ══════════════════════════════════════
@@ -254,8 +276,9 @@ function applyTransition(idx, word){
     const cap = w.charAt(0).toUpperCase() + w.slice(1) + ' ';
     if(base.startsWith(cap)) base = base.slice(cap.length);
   });
-  // Lowercase the first letter of the original sentence when adding a prefix
-  const newSentence = word + ' ' + base.charAt(0).toLowerCase() + base.slice(1);
+  // Lowercase the first letter unless the student used "I "
+  const adjustedBase = base.startsWith('I ') ? base : base.charAt(0).toLowerCase() + base.slice(1);
+  const newSentence = word + ' ' + adjustedBase;
   S.details[idx] = newSentence;
 
   // Update the displayed sentence
@@ -315,12 +338,13 @@ function showFinalParagraph(){
     </div>
     <div>
       <button class="copy-btn" onclick="copyPara()">📋 Copy</button>
-      <button class="read-para-btn" onclick="speakText('${esc(fullText).replace(/'/g,"\\'")}',null)">🔊 Read My Paragraph</button>
+      <button class="read-para-btn" onclick="speakText('${esc(fullText).replace(/'/g,"\\'")}',this)">🔊 Read My Paragraph</button>
       <button class="restart-btn" onclick="restartApp()">🔄 Write Another!</button>
     </div>`);
   document.getElementById('inputArea').classList.add('hidden');
   document.getElementById('micHint').classList.add('hidden');
-  setTimeout(()=>speakText(fullText,null),1000);
+  const readBtn = document.querySelector('.read-para-btn');
+  setTimeout(()=>speakText(fullText, readBtn),1000);
 }
 
 function copyPara(){
@@ -411,10 +435,21 @@ async function handleInput(text){
     setTimeout(()=>renderTopicCard(),400); return;
   }
 
+  // topic step
+  if(S.step===STEP.TOPIC){
+    if(!raw){addPal('Can you tell me what your paragraph will be about? Pick one or type your own! 😊');return;}
+    S.topic=raw;
+    addStudent('My topic is: '+raw);
+    S.step=STEP.D1; updateProgress();
+    setTimeout(()=>addPal(`Great topic! 🎉<br><br>Now let's add your details. Tell me your <strong>first detail sentence</strong> about <em>${esc(raw)}</em>. What is one thing you want to say?`),400);
+    return;
+  }
+
   // detail steps
   if(S.step===STEP.D1||S.step===STEP.D2||S.step===STEP.D3){
     if(raw.split(' ').length<3){addStudent(raw);addPal('Can you say a little more? Try a whole sentence! 😊');return;}
-    addStudent(raw); S.details.push(raw);
+    const detail = ensureSentencePunctuation(raw);
+    addStudent(detail); S.details.push(detail);
     if(S.step===STEP.D1){
       S.step=STEP.D2; updateProgress();
       setTimeout(()=>addPal('Ooh, I like that! Great detail! 🌟<br><br>Tell me your <strong>second</strong> detail. What else do you want to say?'),400);
