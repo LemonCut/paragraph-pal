@@ -507,16 +507,44 @@ function handleKeyDown(e){
 // STT
 // ══════════════════════════════════════
 function toggleMic(){
-  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){
-    addPal('The microphone might not work here — try Chrome on a computer or Chromebook! 🎤');return;
+  // Check for Speech Recognition API support (standard or webkit-prefixed)
+  const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+  if(!SpeechRecognitionAPI){
+    addPal('The microphone isn\'t supported in this browser. Please try Chrome, Edge, or Safari! 🎤');
+    return;
   }
-  if(S.isRecording){S.recognition&&S.recognition.stop();return;}
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  const r=new SR(); r.lang='en-US'; r.interimResults=false; r.maxAlternatives=1;
-  r.onstart=()=>{S.isRecording=true;document.getElementById('micBtn').classList.add('recording');document.getElementById('micBtn').textContent='⏹';document.getElementById('micHint').textContent='🔴 Listening... speak now!';};
-  r.onresult=(e)=>{document.getElementById('userInput').value=e.results[0][0].transcript;};
-  r.onend=r.onerror=()=>{S.isRecording=false;document.getElementById('micBtn').classList.remove('recording');document.getElementById('micBtn').textContent='🎤';document.getElementById('micHint').textContent='🎤 Press the orange button to speak — 🔊 press "Read to me" to hear any message!';};
-  S.recognition=r; r.start();
+  
+  if(S.isRecording){
+    S.recognition&&S.recognition.stop();
+    return;
+  }
+  
+  const r=new SpeechRecognitionAPI(); 
+  r.lang='en-US'; 
+  r.interimResults=false; 
+  r.maxAlternatives=1;
+  
+  r.onstart=()=>{
+    S.isRecording=true;
+    document.getElementById('micBtn').classList.add('recording');
+    document.getElementById('micBtn').textContent='⏹';
+    document.getElementById('micHint').textContent='🔴 Listening... speak now!';
+  };
+  
+  r.onresult=(e)=>{
+    document.getElementById('userInput').value=e.results[0][0].transcript;
+  };
+  
+  r.onend=r.onerror=()=>{
+    S.isRecording=false;
+    document.getElementById('micBtn').classList.remove('recording');
+    document.getElementById('micBtn').textContent='🎤';
+    document.getElementById('micHint').textContent='🎤 Press the orange button to speak — 🔊 press "Read to me" to hear any message!';
+  };
+  
+  S.recognition=r; 
+  r.start();
 }
 
 // ══════════════════════════════════════
