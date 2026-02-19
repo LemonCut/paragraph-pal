@@ -85,7 +85,7 @@ app.post('/api/generate-sentences', async (req, res) => {
 
     let userMsg;
     if (type === 'topic') {
-      userMsg = `A 4th grade student is writing a paragraph about: "${topic}"
+      userMsg = `A student is writing a paragraph about: "${topic}"
 
 Their 3 detail sentences are:
 ${detailText}
@@ -93,7 +93,7 @@ ${detailText}
 Write exactly 3 different topic sentences that:
 - Specifically name or reference "${topic}" — never write a generic sentence
 - Introduce what all 3 details are about
-- Use simple 4th grade words, 8-16 words each
+- Use simple words, 8-16 words each
 - Use simple sentence structure and punctuation
 - Each starts differently
 - Sound friendly and age-appropriate
@@ -105,7 +105,7 @@ Return ONLY a JSON array of 3 strings, no explanation, no markdown.`;
         return res.status(400).json({ error: 'topicSentence required for concluding type' });
       }
 
-      userMsg = `A 4th grade student wrote a paragraph about: "${topic}"
+      userMsg = `A student wrote a paragraph about: "${topic}"
 
 Their topic sentence is: "${topicSentence}"
 
@@ -115,7 +115,7 @@ ${detailText}
 Write exactly 3 different concluding sentences that:
 - Specifically reference "${topic}" — never write a generic sentence
 - Restate the main idea in a new way without adding new information
-- Use simple 4th grade words, 8-16 words each
+- Use simple words, 8-16 words each
 - Use simple sentence structure and punctuation
 - Each starts differently
 - Try to match the writing voice of the student

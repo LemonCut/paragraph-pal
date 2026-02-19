@@ -1,6 +1,6 @@
 # Paragraph Pal 🌟
 
-An AI-powered paragraph builder for 4th grade students.
+An AI-powered paragraph builder for students.
 
 ## Features
 
